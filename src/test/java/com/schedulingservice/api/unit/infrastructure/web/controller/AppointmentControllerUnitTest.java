@@ -108,6 +108,8 @@ class AppointmentControllerUnitTest {
         when(appointmentMapper.toResponse(domain)).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/appointments")
+                .header("X-User-ID", UUID.randomUUID())
+                .header("X-User-Roles", "DOCTOR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isCreated())
@@ -133,7 +135,8 @@ class AppointmentControllerUnitTest {
         when(getAppointmentUseCase.execute(uuid)).thenReturn(domain);
         when(appointmentMapper.toResponse(domain)).thenReturn(response);
 
-        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid))
+        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid)
+                .header("X-User-ID", UUID.randomUUID()))
             .andExpect(status().isOk());
     }
 
@@ -173,6 +176,8 @@ class AppointmentControllerUnitTest {
         when(appointmentMapper.toResponse(domain)).thenReturn(response);
 
         mockMvc.perform(put("/api/v1/appointments/{uuid}", uuid)
+                .header("X-User-ID", UUID.randomUUID())
+                .header("X-User-Roles", "NURSE")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk());
@@ -182,7 +187,9 @@ class AppointmentControllerUnitTest {
     void deleteAppointmentShouldReturnNoContent() throws Exception {
         final UUID uuid = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/v1/appointments/{uuid}", uuid))
+        mockMvc.perform(delete("/api/v1/appointments/{uuid}", uuid)
+                .header("X-User-ID", UUID.randomUUID())
+                .header("X-User-Roles", "ADMIN"))
             .andExpect(status().isNoContent());
     }
 }

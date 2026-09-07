@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class KongContextAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String USER_ROLES_HEADER = "X-User-Roles";
-    private static final String CUSTOMER_ID_HEADER = "X-Customer-ID";
     private static final String USER_ID_HEADER = "X-User-ID";
 
     @Override
@@ -32,11 +31,10 @@ public class KongContextAuthenticationFilter extends OncePerRequestFilter {
         final FilterChain filterChain
     ) throws ServletException, IOException {
         final String rolesHeader = request.getHeader(USER_ROLES_HEADER);
-        final String customerId = request.getHeader(CUSTOMER_ID_HEADER);
         final String userId = request.getHeader(USER_ID_HEADER);
 
         final List<SimpleGrantedAuthority> authorities = parseRoles(rolesHeader);
-        final RequestContextPrincipal principal = new RequestContextPrincipal(customerId, userId, rolesHeader);
+        final RequestContextPrincipal principal = new RequestContextPrincipal(userId, rolesHeader);
         final UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.authenticated(
             principal,
             null,
@@ -61,6 +59,6 @@ public class KongContextAuthenticationFilter extends OncePerRequestFilter {
             .collect(Collectors.toList());
     }
 
-    private record RequestContextPrincipal(String customerId, String userId, String rolesHeader) {
+    private record RequestContextPrincipal(String userId, String rolesHeader) {
     }
 }

@@ -51,7 +51,6 @@ class AppointmentControllerIntegrationTest {
 
         final String createdBody = mockMvc.perform(post("/api/v1/appointments")
                 .header("X-User-Roles", "DOCTOR")
-                .header("X-Customer-ID", UUID.randomUUID())
                 .header("X-User-ID", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -64,14 +63,14 @@ class AppointmentControllerIntegrationTest {
 
         final UUID uuid = UUID.fromString(objectMapper.readTree(createdBody).get("uuid").asText());
 
-        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid))
+        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid)
+                .header("X-User-ID", UUID.randomUUID()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.uuid", equalTo(uuid.toString())));
 
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(2));
         mockMvc.perform(put("/api/v1/appointments/{uuid}", uuid)
                 .header("X-User-Roles", "NURSE")
-                .header("X-Customer-ID", UUID.randomUUID())
                 .header("X-User-ID", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -80,11 +79,11 @@ class AppointmentControllerIntegrationTest {
 
         mockMvc.perform(delete("/api/v1/appointments/{uuid}", uuid)
                 .header("X-User-Roles", "ADMIN")
-                .header("X-Customer-ID", UUID.randomUUID())
                 .header("X-User-ID", UUID.randomUUID()))
             .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid))
+        mockMvc.perform(get("/api/v1/appointments/{uuid}", uuid)
+                .header("X-User-ID", UUID.randomUUID()))
             .andExpect(status().isNotFound());
     }
 
@@ -96,7 +95,7 @@ class AppointmentControllerIntegrationTest {
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
 
         mockMvc.perform(post("/api/v1/appointments")
-                .header("X-Customer-ID", UUID.randomUUID())
+                .header("X-User-Roles", "PATIENT")
                 .header("X-User-ID", UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))

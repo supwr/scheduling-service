@@ -12,6 +12,7 @@ import com.schedulingservice.api.model.AppointmentResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -41,26 +42,39 @@ public class AppointmentController implements AppointmentsApi {
 
     @Override
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
-    public ResponseEntity<AppointmentResponse> createAppointment(final AppointmentRequest appointmentRequest) {
+    public ResponseEntity<AppointmentResponse> createAppointment(
+        @RequestHeader("X-User-ID") final UUID xUserID,
+        @RequestHeader("X-User-Roles") final String xUserRoles,
+        final AppointmentRequest appointmentRequest
+    ) {
         final Appointment createdAppointment = createAppointmentUseCase.execute(appointmentMapper.toDomain(appointmentRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(appointmentMapper.toResponse(createdAppointment));
     }
 
     @Override
-    public ResponseEntity<AppointmentResponse> getAppointmentById(final UUID uuid) {
+    public ResponseEntity<AppointmentResponse> getAppointmentById(final UUID uuid, @RequestHeader("X-User-ID") final UUID xUserID) {
         return ResponseEntity.ok(appointmentMapper.toResponse(getAppointmentUseCase.execute(uuid)));
     }
 
     @Override
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
-    public ResponseEntity<AppointmentResponse> updateAppointment(final UUID uuid, final AppointmentRequest appointmentRequest) {
+    public ResponseEntity<AppointmentResponse> updateAppointment(
+        final UUID uuid,
+        @RequestHeader("X-User-ID") final UUID xUserID,
+        @RequestHeader("X-User-Roles") final String xUserRoles,
+        final AppointmentRequest appointmentRequest
+    ) {
         final Appointment updatedAppointment = updateAppointmentUseCase.execute(uuid, appointmentMapper.toDomain(appointmentRequest));
         return ResponseEntity.ok(appointmentMapper.toResponse(updatedAppointment));
     }
 
     @Override
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
-    public ResponseEntity<Void> deleteAppointment(final UUID uuid) {
+    public ResponseEntity<Void> deleteAppointment(
+        final UUID uuid,
+        @RequestHeader("X-User-ID") final UUID xUserID,
+        @RequestHeader("X-User-Roles") final String xUserRoles
+    ) {
         deleteAppointmentUseCase.execute(uuid);
         return ResponseEntity.noContent().build();
     }

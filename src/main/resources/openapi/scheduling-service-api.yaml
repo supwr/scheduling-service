@@ -17,6 +17,9 @@ paths:
       tags: [Appointments]
       operationId: createAppointment
       summary: Create an appointment
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
+        - $ref: '#/components/parameters/XUserRolesHeader'
       requestBody:
         required: true
         content:
@@ -49,6 +52,8 @@ paths:
       tags: [Appointments]
       operationId: getAppointmentById
       summary: Get an appointment by id
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
       responses:
         '200':
           description: Appointment retrieved successfully
@@ -64,6 +69,9 @@ paths:
       tags: [Appointments]
       operationId: updateAppointment
       summary: Update an appointment
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
+        - $ref: '#/components/parameters/XUserRolesHeader'
       requestBody:
         required: true
         content:
@@ -89,6 +97,9 @@ paths:
       tags: [Appointments]
       operationId: deleteAppointment
       summary: Delete an appointment
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
+        - $ref: '#/components/parameters/XUserRolesHeader'
       responses:
         '204':
           description: Appointment deleted successfully
@@ -179,3 +190,19 @@ components:
           type: string
         instance:
           type: string
+  parameters:
+    XUserIdHeader:
+      name: X-User-ID
+      in: header
+      required: true
+      description: Current user identifier injected by the gateway
+      schema:
+        type: string
+        format: uuid
+    XUserRolesHeader:
+      name: X-User-Roles
+      in: header
+      required: true
+      description: Comma-separated roles injected by the gateway
+      schema:
+        type: string
