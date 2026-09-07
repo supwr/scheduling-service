@@ -5,6 +5,7 @@ import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotif
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.application.usecase.appointment.create.CreateAppointmentUseCase;
+import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.model.Appointment;
 import com.schedulingservice.api.domain.model.AppointmentStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -67,6 +70,7 @@ class CreateAppointmentUseCaseTest {
         );
 
         when(appointmentGateway.save(any(Appointment.class))).thenReturn(saved);
+        when(appointmentGateway.findActiveAppointmentsByPatientId(input.getPatientId())).thenReturn(List.of());
 
         final Appointment result = useCase.execute(input);
 
@@ -75,9 +79,42 @@ class CreateAppointmentUseCaseTest {
 
         final ArgumentCaptor<AppointmentScheduledNotificationEvent> notificationCaptor = ArgumentCaptor.forClass(AppointmentScheduledNotificationEvent.class);
         final ArgumentCaptor<AppointmentScheduledEvent> historyCaptor = ArgumentCaptor.forClass(AppointmentScheduledEvent.class);
-        verify(eventPublisher).publishNotificationEvent(notificationCaptor.capture());
-        verify(eventPublisher).publishHistoryEvent(historyCaptor.capture());
+        verify(eventPublisher).publishNotificationEvent(org.mockito.ArgumentMatchers.eq(saved.getUuid()), notificationCaptor.capture());
+        verify(eventPublisher).publishHistoryEvent(org.mockito.ArgumentMatchers.eq(saved.getUuid()), historyCaptor.capture());
         assertEquals(input.getPatientId(), notificationCaptor.getValue().patientId());
         assertEquals(input.getDoctorId(), historyCaptor.getValue().doctorId());
+    }
+
+    @Test
+    void executeShouldFailWhenActiveConflictExists() {
+        final UUID patientId = UUID.randomUUID();
+        final OffsetDateTime appointmentDateTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(1);
+        final Appointment input = new Appointment(
+            null,
+            null,
+            patientId,
+            UUID.randomUUID(),
+            appointmentDateTime,
+            AppointmentStatus.SCHEDULED,
+            null,
+            null,
+            null
+        );
+
+        when(appointmentGateway.findActiveAppointmentsByPatientId(patientId)).thenReturn(List.of(
+            new Appointment(
+                1L,
+                UUID.randomUUID(),
+                patientId,
+                UUID.randomUUID(),
+                appointmentDateTime.minusHours(3).minusMinutes(30),
+                AppointmentStatus.SCHEDULED,
+                Instant.now(),
+                Instant.now(),
+                null
+            )
+        ));
+
+        assertThrows(ConflictException.class, () -> useCase.execute(input));
     }
 }

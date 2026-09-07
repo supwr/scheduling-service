@@ -1,6 +1,7 @@
 package com.schedulingservice.api.infrastructure.web.exception;
 
 import com.schedulingservice.api.domain.exception.DomainException;
+import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
 import com.schedulingservice.api.domain.exception.ValidationException;
 import org.slf4j.Logger;
@@ -45,6 +46,19 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("timestamp", Instant.now());
         problemDetail.setProperty("field", ex.getField());
         problemDetail.setProperty("rejectedValue", ex.getRejectedValue());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflictException(final ConflictException ex, final WebRequest request) {
+        logger.warn("Conflict: {}", ex.getMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problemDetail.setType(URI.create(PROBLEM_BASE_URL + "conflict"));
+        problemDetail.setTitle("Conflict");
+        problemDetail.setInstance(URI.create(request.getDescription(false).replace("uri=", "")));
+        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("resource", ex.getResource());
+        problemDetail.setProperty("reason", ex.getReason());
         return problemDetail;
     }
 

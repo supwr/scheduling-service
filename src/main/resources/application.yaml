@@ -34,6 +34,7 @@ spring:
 
 app:
   kafka:
+    source-service: scheduling-service
     topics:
       notification: scheduling.appointment.notification
       appointment-scheduled: scheduling.appointment.scheduled

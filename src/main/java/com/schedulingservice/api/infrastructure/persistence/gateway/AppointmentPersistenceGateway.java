@@ -2,11 +2,13 @@ package com.schedulingservice.api.infrastructure.persistence.gateway;
 
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.domain.model.Appointment;
+import com.schedulingservice.api.domain.model.AppointmentStatus;
 import com.schedulingservice.api.infrastructure.persistence.mapper.AppointmentPersistenceMapper;
 import com.schedulingservice.api.infrastructure.persistence.repository.AppointmentRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,5 +36,13 @@ public class AppointmentPersistenceGateway implements AppointmentGateway {
     @Override
     public Optional<Appointment> findByUuid(final UUID uuid) {
         return repository.findByUuidAndDeletedAtIsNull(uuid).map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Appointment> findActiveAppointmentsByPatientId(final UUID patientId) {
+        return repository.findActiveAppointmentsByPatientId(patientId).stream()
+            .map(mapper::toDomain)
+            .filter(appointment -> appointment.getStatus() != AppointmentStatus.CANCELLED)
+            .toList();
     }
 }

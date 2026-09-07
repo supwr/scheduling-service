@@ -88,6 +88,28 @@ class AppointmentControllerIntegrationTest {
     }
 
     @Test
+    void appointmentCreationShouldBeIdempotentForSamePatientAndSchedule() throws Exception {
+        final AppointmentRequest request = new AppointmentRequest();
+        request.setPatientId(UUID.randomUUID());
+        request.setDoctorId(UUID.randomUUID());
+        request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+
+        mockMvc.perform(post("/api/v1/appointments")
+                .header("X-User-Roles", "DOCTOR")
+                .header("X-User-ID", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/appointments")
+                .header("X-User-Roles", "DOCTOR")
+                .header("X-User-ID", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isConflict());
+    }
+
+    @Test
     void appointmentMutationShouldBeForbiddenWithoutRole() throws Exception {
         final AppointmentRequest request = new AppointmentRequest();
         request.setPatientId(UUID.randomUUID());

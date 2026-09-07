@@ -4,9 +4,13 @@ import com.schedulingservice.api.application.dto.event.AppointmentScheduledEvent
 import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
+import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.model.Appointment;
 import com.schedulingservice.api.domain.model.AppointmentStatus;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 public class CreateAppointmentUseCase {
@@ -26,6 +30,13 @@ public class CreateAppointmentUseCase {
         Objects.requireNonNull(appointment);
         appointment.validate();
 
+        if (hasConflictWithinFourHours(appointment)) {
+            throw new ConflictException(
+                "Appointment",
+                "A patient can only have one non-cancelled appointment within a 4 hour window"
+            );
+        }
+
         final Appointment appointmentToSave = new Appointment(
             null,
             null,
@@ -40,6 +51,7 @@ public class CreateAppointmentUseCase {
 
         final Appointment savedAppointment = appointmentGateway.save(appointmentToSave);
         eventPublisher.publishNotificationEvent(
+            savedAppointment.getUuid(),
             new AppointmentScheduledNotificationEvent(
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
@@ -47,6 +59,7 @@ public class CreateAppointmentUseCase {
             )
         );
         eventPublisher.publishHistoryEvent(
+            savedAppointment.getUuid(),
             new AppointmentScheduledEvent(
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
@@ -54,5 +67,16 @@ public class CreateAppointmentUseCase {
             )
         );
         return savedAppointment;
+    }
+
+    private boolean hasConflictWithinFourHours(final Appointment appointment) {
+        final List<Appointment> activeAppointments = appointmentGateway.findActiveAppointmentsByPatientId(appointment.getPatientId());
+        final var requestedTime = appointment.getAppointmentDateTime().toInstant().truncatedTo(ChronoUnit.MINUTES);
+
+        return activeAppointments.stream()
+            .filter(existing -> existing.getAppointmentDateTime() != null)
+            .map(existing -> existing.getAppointmentDateTime().toInstant().truncatedTo(ChronoUnit.MINUTES))
+            .map(existingTime -> Duration.between(existingTime, requestedTime).abs())
+            .anyMatch(duration -> duration.compareTo(Duration.ofHours(4)) < 0);
     }
 }
