@@ -123,4 +123,51 @@ class AppointmentControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isForbidden());
     }
+
+    @Test
+    void appointmentUpdateShouldRespectConflictWindow() throws Exception {
+        final UUID patientId = UUID.randomUUID();
+        final UUID doctorId = UUID.randomUUID();
+        final OffsetDateTime firstTime = OffsetDateTime.now(ZoneOffset.UTC).plusDays(1).withMinute(0).withSecond(0).withNano(0);
+        final OffsetDateTime secondTime = firstTime.plusHours(6);
+
+        final AppointmentRequest firstRequest = new AppointmentRequest();
+        firstRequest.setPatientId(patientId);
+        firstRequest.setDoctorId(doctorId);
+        firstRequest.setAppointmentDateTime(firstTime);
+
+        final AppointmentRequest secondRequest = new AppointmentRequest();
+        secondRequest.setPatientId(patientId);
+        secondRequest.setDoctorId(UUID.randomUUID());
+        secondRequest.setAppointmentDateTime(secondTime);
+
+        final String createdBody = mockMvc.perform(post("/api/v1/appointments")
+                .header("X-User-Roles", "DOCTOR")
+                .header("X-User-ID", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(firstRequest)))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        final UUID firstUuid = UUID.fromString(objectMapper.readTree(createdBody).get("uuid").asText());
+
+        mockMvc.perform(post("/api/v1/appointments")
+                .header("X-User-Roles", "DOCTOR")
+                .header("X-User-ID", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(secondRequest)))
+            .andExpect(status().isCreated());
+
+        firstRequest.setAppointmentDateTime(secondTime.minusHours(3));
+
+        mockMvc.perform(put("/api/v1/appointments/{uuid}", firstUuid)
+                .header("X-User-Roles", "NURSE")
+                .header("X-User-ID", UUID.randomUUID())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(firstRequest)))
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.detail", equalTo("A patient can only have one non-cancelled appointment within a 4 hour window")));
+    }
 }
