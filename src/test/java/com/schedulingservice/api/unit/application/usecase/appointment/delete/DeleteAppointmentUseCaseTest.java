@@ -43,6 +43,8 @@ class DeleteAppointmentUseCaseTest {
             UUID.randomUUID(),
             UUID.randomUUID(),
             OffsetDateTime.now(ZoneOffset.UTC).plusDays(1),
+            "John Doe",
+            "john@example.com",
             AppointmentStatus.SCHEDULED,
             Instant.now(),
             Instant.now(),

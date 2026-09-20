@@ -48,6 +48,8 @@ class AppointmentControllerIntegrationTest {
         request.setPatientId(patientId);
         request.setDoctorId(doctorId);
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFullname("John Doe");
+        request.setEmail("john@example.com");
 
         final String createdBody = mockMvc.perform(post("/api/v1/appointments")
                 .header("X-User-Roles", "DOCTOR")
@@ -93,6 +95,8 @@ class AppointmentControllerIntegrationTest {
         request.setPatientId(UUID.randomUUID());
         request.setDoctorId(UUID.randomUUID());
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFullname("Jane Smith");
+        request.setEmail("jane@example.com");
 
         mockMvc.perform(post("/api/v1/appointments")
                 .header("X-User-Roles", "DOCTOR")
@@ -115,6 +119,8 @@ class AppointmentControllerIntegrationTest {
         request.setPatientId(UUID.randomUUID());
         request.setDoctorId(UUID.randomUUID());
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFullname("Bob Johnson");
+        request.setEmail("bob@example.com");
 
         mockMvc.perform(post("/api/v1/appointments")
                 .header("X-User-Roles", "PATIENT")
@@ -135,11 +141,15 @@ class AppointmentControllerIntegrationTest {
         firstRequest.setPatientId(patientId);
         firstRequest.setDoctorId(doctorId);
         firstRequest.setAppointmentDateTime(firstTime);
+        firstRequest.setFullname("Alice Wilson");
+        firstRequest.setEmail("alice@example.com");
 
         final AppointmentRequest secondRequest = new AppointmentRequest();
         secondRequest.setPatientId(patientId);
         secondRequest.setDoctorId(UUID.randomUUID());
         secondRequest.setAppointmentDateTime(secondTime);
+        secondRequest.setFullname("Charlie Brown");
+        secondRequest.setEmail("charlie@example.com");
 
         final String createdBody = mockMvc.perform(post("/api/v1/appointments")
                 .header("X-User-Roles", "DOCTOR")

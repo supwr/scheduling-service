@@ -150,7 +150,11 @@ components:
         appointmentDateTime:
           type: string
           format: date-time
-      required: [patientId, doctorId, appointmentDateTime]
+        fullname:
+          type: string
+        email:
+          type: string
+      required: [patientId, doctorId, appointmentDateTime, fullname, email]
     AppointmentResponse:
       type: object
       properties:
@@ -166,6 +170,10 @@ components:
         appointmentDateTime:
           type: string
           format: date-time
+        fullname:
+          type: string
+        email:
+          type: string
         status:
           $ref: '#/components/schemas/AppointmentStatus'
         createdAt:
@@ -176,7 +184,7 @@ components:
           format: date-time
     AppointmentStatus:
       type: string
-      enum: [SCHEDULED, CANCELLED]
+      enum: [SCHEDULED, CONFIRMED, CANCELLED, NO_SHOW, COMPLETED]
     ProblemDetail:
       type: object
       properties:

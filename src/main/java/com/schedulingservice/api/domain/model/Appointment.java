@@ -13,6 +13,8 @@ public class Appointment {
     private final UUID patientId;
     private final UUID doctorId;
     private final OffsetDateTime appointmentDateTime;
+    private final String fullname;
+    private final String email;
     private final AppointmentStatus status;
     private final Instant createdAt;
     private final Instant updatedAt;
@@ -24,6 +26,8 @@ public class Appointment {
         final UUID patientId,
         final UUID doctorId,
         final OffsetDateTime appointmentDateTime,
+        final String fullname,
+        final String email,
         final AppointmentStatus status,
         final Instant createdAt,
         final Instant updatedAt,
@@ -34,6 +38,8 @@ public class Appointment {
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.appointmentDateTime = appointmentDateTime;
+        this.fullname = fullname;
+        this.email = email;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -58,6 +64,14 @@ public class Appointment {
 
     public OffsetDateTime getAppointmentDateTime() {
         return appointmentDateTime;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public AppointmentStatus getStatus() {
@@ -89,6 +103,12 @@ public class Appointment {
         }
         if (appointmentDateTime == null) {
             throw new ValidationException("appointmentDateTime", null, "Appointment date and time is required");
+        }
+        if (fullname == null || fullname.isBlank()) {
+            throw new ValidationException("fullname", null, "Fullname is required");
+        }
+        if (email == null || email.isBlank()) {
+            throw new ValidationException("email", null, "Email is required");
         }
         if (status == null) {
             throw new ValidationException("status", null, "Appointment status is required");

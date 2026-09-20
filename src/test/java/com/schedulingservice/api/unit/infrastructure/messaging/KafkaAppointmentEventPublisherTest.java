@@ -35,6 +35,8 @@ class KafkaAppointmentEventPublisherTest {
         final AppointmentScheduledNotificationEvent event = new AppointmentScheduledNotificationEvent(
             patientId,
             UUID.randomUUID(),
+            "John Doe",
+            "john@example.com",
             OffsetDateTime.of(2026, 9, 7, 18, 51, 22, 785_000_000, ZoneOffset.ofHours(-3))
         );
 
@@ -68,6 +70,8 @@ class KafkaAppointmentEventPublisherTest {
         final AppointmentScheduledEvent event = new AppointmentScheduledEvent(
             patientId,
             UUID.randomUUID(),
+            "John Doe",
+            "john@example.com",
             OffsetDateTime.of(2026, 9, 7, 18, 51, 22, 785_000_000, ZoneOffset.ofHours(-3))
         );
 

@@ -74,6 +74,8 @@ class AppointmentControllerUnitTest {
         request.setPatientId(UUID.randomUUID());
         request.setDoctorId(UUID.randomUUID());
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFullname("John Doe");
+        request.setEmail("john@example.com");
 
         final Appointment domain = new Appointment(
             1L,
@@ -81,6 +83,8 @@ class AppointmentControllerUnitTest {
             request.getPatientId(),
             request.getDoctorId(),
             request.getAppointmentDateTime(),
+            request.getFullname(),
+            request.getEmail(),
             AppointmentStatus.SCHEDULED,
             Instant.now(),
             Instant.now(),
@@ -91,6 +95,8 @@ class AppointmentControllerUnitTest {
         response.setPatientId(domain.getPatientId());
         response.setDoctorId(domain.getDoctorId());
         response.setAppointmentDateTime(domain.getAppointmentDateTime());
+        response.setFullname(domain.getFullname());
+        response.setEmail(domain.getEmail());
         response.setStatus(com.schedulingservice.api.model.AppointmentStatus.SCHEDULED);
 
         when(appointmentMapper.toDomain(any(AppointmentRequest.class))).thenReturn(new Appointment(
@@ -99,6 +105,8 @@ class AppointmentControllerUnitTest {
             request.getPatientId(),
             request.getDoctorId(),
             request.getAppointmentDateTime(),
+            request.getFullname(),
+            request.getEmail(),
             AppointmentStatus.SCHEDULED,
             null,
             null,
@@ -125,6 +133,8 @@ class AppointmentControllerUnitTest {
             UUID.randomUUID(),
             UUID.randomUUID(),
             OffsetDateTime.now(ZoneOffset.UTC).plusDays(1),
+            "John Doe",
+            "john@example.com",
             AppointmentStatus.SCHEDULED,
             Instant.now(),
             Instant.now(),
@@ -132,6 +142,8 @@ class AppointmentControllerUnitTest {
         );
         final AppointmentResponse response = new AppointmentResponse();
         response.setUuid(uuid);
+        response.setFullname(domain.getFullname());
+        response.setEmail(domain.getEmail());
         when(getAppointmentUseCase.execute(uuid)).thenReturn(domain);
         when(appointmentMapper.toResponse(domain)).thenReturn(response);
 
@@ -147,6 +159,8 @@ class AppointmentControllerUnitTest {
         request.setPatientId(UUID.randomUUID());
         request.setDoctorId(UUID.randomUUID());
         request.setAppointmentDateTime(OffsetDateTime.now(ZoneOffset.UTC).plusDays(1));
+        request.setFullname("Jane Smith");
+        request.setEmail("jane@example.com");
 
         final Appointment domain = new Appointment(
             1L,
@@ -154,6 +168,8 @@ class AppointmentControllerUnitTest {
             request.getPatientId(),
             request.getDoctorId(),
             request.getAppointmentDateTime(),
+            request.getFullname(),
+            request.getEmail(),
             AppointmentStatus.SCHEDULED,
             Instant.now(),
             Instant.now(),
@@ -161,12 +177,16 @@ class AppointmentControllerUnitTest {
         );
         final AppointmentResponse response = new AppointmentResponse();
         response.setUuid(uuid);
+        response.setFullname(domain.getFullname());
+        response.setEmail(domain.getEmail());
         when(appointmentMapper.toDomain(any(AppointmentRequest.class))).thenReturn(new Appointment(
             null,
             null,
             request.getPatientId(),
             request.getDoctorId(),
             request.getAppointmentDateTime(),
+            request.getFullname(),
+            request.getEmail(),
             AppointmentStatus.SCHEDULED,
             null,
             null,

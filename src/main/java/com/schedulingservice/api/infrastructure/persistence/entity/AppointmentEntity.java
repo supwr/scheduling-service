@@ -42,6 +42,12 @@ public class AppointmentEntity {
     @Column(name = "appointment_date_time", nullable = false)
     private OffsetDateTime appointmentDateTime;
 
+    @Column(name = "fullname", nullable = false)
+    private String fullname;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppointmentStatus status;

@@ -29,6 +29,8 @@ public class DeleteAppointmentUseCase {
             currentAppointment.getPatientId(),
             currentAppointment.getDoctorId(),
             currentAppointment.getAppointmentDateTime(),
+            currentAppointment.getFullname(),
+            currentAppointment.getEmail(),
             AppointmentStatus.CANCELLED,
             currentAppointment.getCreatedAt(),
             Instant.now(),

@@ -42,6 +42,8 @@ public class UpdateAppointmentUseCase {
             appointment.getPatientId(),
             appointment.getDoctorId(),
             appointment.getAppointmentDateTime(),
+            appointment.getFullname(),
+            appointment.getEmail(),
             AppointmentStatus.SCHEDULED,
             currentAppointment.getCreatedAt(),
             Instant.now(),

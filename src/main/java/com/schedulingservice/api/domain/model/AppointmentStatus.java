@@ -2,5 +2,8 @@ package com.schedulingservice.api.domain.model;
 
 public enum AppointmentStatus {
     SCHEDULED,
-    CANCELLED
+    CONFIRMED,
+    CANCELLED,
+    NO_SHOW,
+    COMPLETED
 }

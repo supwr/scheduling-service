@@ -8,6 +8,8 @@ import java.util.UUID;
 public record AppointmentScheduledEvent(
     UUID patientId,
     UUID doctorId,
+    String fullname,
+    String email,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
     OffsetDateTime appointmentDateTime
 ) {

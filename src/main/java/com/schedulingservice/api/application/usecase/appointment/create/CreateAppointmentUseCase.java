@@ -43,6 +43,8 @@ public class CreateAppointmentUseCase {
             appointment.getPatientId(),
             appointment.getDoctorId(),
             appointment.getAppointmentDateTime(),
+            appointment.getFullname(),
+            appointment.getEmail(),
             AppointmentStatus.SCHEDULED,
             null,
             null,
@@ -55,6 +57,8 @@ public class CreateAppointmentUseCase {
             new AppointmentScheduledNotificationEvent(
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
                 savedAppointment.getAppointmentDateTime()
             )
         );
@@ -63,6 +67,8 @@ public class CreateAppointmentUseCase {
             new AppointmentScheduledEvent(
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
                 savedAppointment.getAppointmentDateTime()
             )
         );
