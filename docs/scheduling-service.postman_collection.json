@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "bd15ec8f-3ee5-41bf-883c-22cf7cae5136",
+		"name": "Scheduling Service",
+		"description": "Coleção gerada a partir do contrato scheduling-service-api.yaml — inclui POST, PUT, GET e DELETE para /api/v1/appointments. Headers: X-User-ID (UUID), X-User-Roles = DOCTOR.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4242434"
+	},
+	"item": [
+		{
+			"name": "Create Appointment (POST /api/v1/appointments)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-User-ID",
+						"value": "fc686449-7e22-4528-912c-2d7525b452d8"
+					},
+					{
+						"key": "X-User-Roles",
+						"value": "DOCTOR"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"patientId\": \"e9d4c337-bd73-49a3-bd09-6877033f6505\",\n  \"doctorId\": \"fc686449-7e22-4528-912c-2d7525b452d8\",\n  \"appointmentDateTime\": \"2026-09-21T14:30:00-03:00\",\n  \"fullname\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appointments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appointments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Appointment by ID (GET /api/v1/appointments/{uuid})",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-ID",
+						"value": "fc686449-7e22-4528-912c-2d7525b452d8"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appointments/6cd2b344-5e2d-418d-b8bd-816d5dabab82",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appointments",
+						"6cd2b344-5e2d-418d-b8bd-816d5dabab82"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Appointment (PUT /api/v1/appointments/{uuid})",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-User-ID",
+						"value": "fc686449-7e22-4528-912c-2d7525b452d8"
+					},
+					{
+						"key": "X-User-Roles",
+						"value": "DOCTOR"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"patientId\": \"e9d4c337-bd73-49a3-bd09-6877033f6505\",\n  \"doctorId\": \"fc686449-7e22-4528-912c-2d7525b452d8\",\n  \"appointmentDateTime\": \"2026-09-22T10:00:00-03:00\",\n  \"fullname\": \"John Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appointments/6cd2b344-5e2d-418d-b8bd-816d5dabab82",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appointments",
+						"6cd2b344-5e2d-418d-b8bd-816d5dabab82"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Appointment (DELETE /api/v1/appointments/{uuid})",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-User-ID",
+						"value": "fc686449-7e22-4528-912c-2d7525b452d8"
+					},
+					{
+						"key": "X-User-Roles",
+						"value": "DOCTOR"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/appointments/6cd2b344-5e2d-418d-b8bd-816d5dabab82",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"appointments",
+						"6cd2b344-5e2d-418d-b8bd-816d5dabab82"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
