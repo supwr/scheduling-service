@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public record AppointmentScheduledEvent(
+public record AppointmentHistoryEvent(
+    AppointmentHistoryEventType type,
     UUID patientId,
     UUID doctorId,
     String fullname,

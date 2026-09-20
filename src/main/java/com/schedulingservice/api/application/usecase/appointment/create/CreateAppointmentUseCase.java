@@ -1,6 +1,7 @@
 package com.schedulingservice.api.application.usecase.appointment.create;
 
-import com.schedulingservice.api.application.dto.event.AppointmentScheduledEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
 import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
@@ -64,7 +65,8 @@ public class CreateAppointmentUseCase {
         );
         eventPublisher.publishHistoryEvent(
             savedAppointment.getUuid(),
-            new AppointmentScheduledEvent(
+            new AppointmentHistoryEvent(
+                AppointmentHistoryEventType.SCHEDULED,
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
                 savedAppointment.getFullname(),

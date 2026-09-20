@@ -1,6 +1,7 @@
 package com.schedulingservice.api.unit.infrastructure.messaging;
 
-import com.schedulingservice.api.application.dto.event.AppointmentScheduledEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
 import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.infrastructure.messaging.KafkaAppointmentEventPublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,7 +68,8 @@ class KafkaAppointmentEventPublisherTest {
 
         final UUID resourceUuid = UUID.randomUUID();
         final UUID patientId = UUID.randomUUID();
-        final AppointmentScheduledEvent event = new AppointmentScheduledEvent(
+        final AppointmentHistoryEvent event = new AppointmentHistoryEvent(
+            AppointmentHistoryEventType.SCHEDULED,
             patientId,
             UUID.randomUUID(),
             "John Doe",
@@ -82,9 +84,11 @@ class KafkaAppointmentEventPublisherTest {
         verify(kafkaTemplate).send(captor.capture());
         assertEquals(patientId.toString(), captor.getValue().key());
         assertEquals("history-topic", captor.getValue().topic());
+        assertEquals(AppointmentHistoryEventType.SCHEDULED, ((AppointmentHistoryEvent) captor.getValue().value()).type());
 
         final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         final String json = objectMapper.writeValueAsString(event);
+        assertTrue(json.contains("\"type\":\"SCHEDULED\""));
         assertTrue(json.contains("\"appointmentDateTime\":\"2026-09-07 18:51:22.785 -0300\""));
     }
 }

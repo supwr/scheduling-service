@@ -1,6 +1,9 @@
 package com.schedulingservice.api.unit.application.usecase.appointment.update;
 
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
+import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.usecase.appointment.update.UpdateAppointmentUseCase;
 import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
@@ -9,6 +12,7 @@ import com.schedulingservice.api.domain.model.AppointmentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,6 +26,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,11 +35,14 @@ class UpdateAppointmentUseCaseTest {
     @Mock
     private AppointmentGateway appointmentGateway;
 
+    @Mock
+    private AppointmentEventPublisher eventPublisher;
+
     private UpdateAppointmentUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new UpdateAppointmentUseCase(appointmentGateway);
+        useCase = new UpdateAppointmentUseCase(appointmentGateway, eventPublisher);
     }
 
     @Test
@@ -71,6 +79,10 @@ class UpdateAppointmentUseCaseTest {
         when(appointmentGateway.save(any(Appointment.class))).thenReturn(updated);
 
         assertEquals(updated.getUuid(), useCase.execute(uuid, updated).getUuid());
+
+        final ArgumentCaptor<AppointmentHistoryEvent> eventCaptor = ArgumentCaptor.forClass(AppointmentHistoryEvent.class);
+        verify(eventPublisher).publishHistoryEvent(org.mockito.ArgumentMatchers.eq(updated.getUuid()), eventCaptor.capture());
+        assertEquals(AppointmentHistoryEventType.UPDATED, eventCaptor.getValue().type());
     }
 
     @Test

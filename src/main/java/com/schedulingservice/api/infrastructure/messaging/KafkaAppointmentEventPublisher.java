@@ -1,6 +1,6 @@
 package com.schedulingservice.api.infrastructure.messaging;
 
-import com.schedulingservice.api.application.dto.event.AppointmentScheduledEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -38,7 +38,7 @@ public class KafkaAppointmentEventPublisher implements AppointmentEventPublisher
     }
 
     @Override
-    public void publishHistoryEvent(final UUID resourceUuid, final AppointmentScheduledEvent event) {
+    public void publishHistoryEvent(final UUID resourceUuid, final AppointmentHistoryEvent event) {
         kafkaTemplate.send(buildRecord(appointmentScheduledTopic, resourceUuid, event.patientId().toString(), event));
     }
 

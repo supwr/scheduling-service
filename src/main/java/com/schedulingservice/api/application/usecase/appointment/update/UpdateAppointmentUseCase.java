@@ -1,5 +1,8 @@
 package com.schedulingservice.api.application.usecase.appointment.update;
 
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
@@ -16,9 +19,14 @@ import java.util.UUID;
 public class UpdateAppointmentUseCase {
 
     private final AppointmentGateway appointmentGateway;
+    private final AppointmentEventPublisher eventPublisher;
 
-    public UpdateAppointmentUseCase(final AppointmentGateway appointmentGateway) {
+    public UpdateAppointmentUseCase(
+        final AppointmentGateway appointmentGateway,
+        final AppointmentEventPublisher eventPublisher
+    ) {
         this.appointmentGateway = appointmentGateway;
+        this.eventPublisher = eventPublisher;
     }
 
     public Appointment execute(final UUID uuid, final Appointment appointment) {
@@ -50,7 +58,19 @@ public class UpdateAppointmentUseCase {
             null
         );
 
-        return appointmentGateway.save(updatedAppointment);
+        final Appointment savedAppointment = appointmentGateway.save(updatedAppointment);
+        eventPublisher.publishHistoryEvent(
+            savedAppointment.getUuid(),
+            new AppointmentHistoryEvent(
+                AppointmentHistoryEventType.UPDATED,
+                savedAppointment.getPatientId(),
+                savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
+                savedAppointment.getAppointmentDateTime()
+            )
+        );
+        return savedAppointment;
     }
 
     private boolean hasConflictWithinFourHours(final Appointment appointment, final UUID excludedUuid) {

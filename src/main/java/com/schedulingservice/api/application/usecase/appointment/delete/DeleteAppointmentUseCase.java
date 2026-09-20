@@ -1,5 +1,8 @@
 package com.schedulingservice.api.application.usecase.appointment.delete;
 
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
+import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
 import com.schedulingservice.api.domain.model.Appointment;
@@ -12,9 +15,14 @@ import java.util.UUID;
 public class DeleteAppointmentUseCase {
 
     private final AppointmentGateway appointmentGateway;
+    private final AppointmentEventPublisher eventPublisher;
 
-    public DeleteAppointmentUseCase(final AppointmentGateway appointmentGateway) {
+    public DeleteAppointmentUseCase(
+        final AppointmentGateway appointmentGateway,
+        final AppointmentEventPublisher eventPublisher
+    ) {
         this.appointmentGateway = appointmentGateway;
+        this.eventPublisher = eventPublisher;
     }
 
     public void execute(final UUID uuid) {
@@ -37,6 +45,17 @@ public class DeleteAppointmentUseCase {
             Instant.now()
         );
 
-        appointmentGateway.save(deletedAppointment);
+        final Appointment savedAppointment = appointmentGateway.save(deletedAppointment);
+        eventPublisher.publishHistoryEvent(
+            savedAppointment.getUuid(),
+            new AppointmentHistoryEvent(
+                AppointmentHistoryEventType.DELETED,
+                savedAppointment.getPatientId(),
+                savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
+                savedAppointment.getAppointmentDateTime()
+            )
+        );
     }
 }

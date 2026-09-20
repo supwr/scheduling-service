@@ -26,12 +26,18 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public UpdateAppointmentUseCase updateAppointmentUseCase(final AppointmentGateway appointmentGateway) {
-        return new UpdateAppointmentUseCase(appointmentGateway);
+    public UpdateAppointmentUseCase updateAppointmentUseCase(
+        final AppointmentGateway appointmentGateway,
+        final AppointmentEventPublisher eventPublisher
+    ) {
+        return new UpdateAppointmentUseCase(appointmentGateway, eventPublisher);
     }
 
     @Bean
-    public DeleteAppointmentUseCase deleteAppointmentUseCase(final AppointmentGateway appointmentGateway) {
-        return new DeleteAppointmentUseCase(appointmentGateway);
+    public DeleteAppointmentUseCase deleteAppointmentUseCase(
+        final AppointmentGateway appointmentGateway,
+        final AppointmentEventPublisher eventPublisher
+    ) {
+        return new DeleteAppointmentUseCase(appointmentGateway, eventPublisher);
     }
 }
