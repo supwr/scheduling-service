@@ -63,3 +63,13 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+resilience4j:
+  ratelimiter:
+    instances:
+      appointmentLimiter:
+        limitRefreshPeriod: 1s
+        limitForPeriod: 5
+        timeoutDuration: 5s
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 100

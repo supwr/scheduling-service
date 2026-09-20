@@ -4,6 +4,7 @@ import com.schedulingservice.api.domain.exception.DomainException;
 import com.schedulingservice.api.domain.exception.ConflictException;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
 import com.schedulingservice.api.domain.exception.ValidationException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -87,6 +88,21 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Forbidden");
         problemDetail.setInstance(URI.create(request.getDescription(false).replace("uri=", "")));
         problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ProblemDetail handleRateLimitExceeded(final RequestNotPermitted ex, final WebRequest request) {
+        logger.warn("Rate limit exceeded: {}", ex.getMessage());
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.TOO_MANY_REQUESTS,
+            "Rate limit exceeded. Maximum 5 requests per second allowed."
+        );
+        problemDetail.setType(URI.create(PROBLEM_BASE_URL + "rate-limit-exceeded"));
+        problemDetail.setTitle("Too Many Requests");
+        problemDetail.setInstance(URI.create(request.getDescription(false).replace("uri=", "")));
+        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("retryAfter", "1s");
         return problemDetail;
     }
 

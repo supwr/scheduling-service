@@ -9,6 +9,7 @@ import com.schedulingservice.api.domain.model.Appointment;
 import com.schedulingservice.api.infrastructure.web.mapper.AppointmentMapper;
 import com.schedulingservice.api.model.AppointmentRequest;
 import com.schedulingservice.api.model.AppointmentResponse;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,6 +42,7 @@ public class AppointmentController implements AppointmentsApi {
     }
 
     @Override
+    @RateLimiter(name = "appointmentLimiter")
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
     public ResponseEntity<AppointmentResponse> createAppointment(
         @RequestHeader("X-User-ID") final UUID xUserID,
@@ -52,11 +54,13 @@ public class AppointmentController implements AppointmentsApi {
     }
 
     @Override
+    @RateLimiter(name = "appointmentLimiter")
     public ResponseEntity<AppointmentResponse> getAppointmentById(final UUID uuid, @RequestHeader("X-User-ID") final UUID xUserID) {
         return ResponseEntity.ok(appointmentMapper.toResponse(getAppointmentUseCase.execute(uuid)));
     }
 
     @Override
+    @RateLimiter(name = "appointmentLimiter")
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
     public ResponseEntity<AppointmentResponse> updateAppointment(
         final UUID uuid,
@@ -69,6 +73,7 @@ public class AppointmentController implements AppointmentsApi {
     }
 
     @Override
+    @RateLimiter(name = "appointmentLimiter")
     @PreAuthorize("hasAnyRole('DOCTOR', 'NURSE', 'ADMIN')")
     public ResponseEntity<Void> deleteAppointment(
         final UUID uuid,
