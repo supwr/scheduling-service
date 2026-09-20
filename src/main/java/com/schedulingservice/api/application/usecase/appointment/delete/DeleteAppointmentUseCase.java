@@ -2,6 +2,8 @@ package com.schedulingservice.api.application.usecase.appointment.delete;
 
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.dto.event.AppointmentNotificationBodyFactory;
+import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.domain.exception.EntityNotFoundException;
@@ -46,6 +48,17 @@ public class DeleteAppointmentUseCase {
         );
 
         final Appointment savedAppointment = appointmentGateway.save(deletedAppointment);
+        eventPublisher.publishNotificationEvent(
+            savedAppointment.getUuid(),
+            new AppointmentScheduledNotificationEvent(
+                savedAppointment.getPatientId(),
+                savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
+                AppointmentNotificationBodyFactory.deleted(),
+                savedAppointment.getAppointmentDateTime()
+            )
+        );
         eventPublisher.publishHistoryEvent(
             savedAppointment.getUuid(),
             new AppointmentHistoryEvent(

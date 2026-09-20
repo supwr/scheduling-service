@@ -2,6 +2,7 @@ package com.schedulingservice.api.unit.infrastructure.messaging;
 
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.dto.event.AppointmentNotificationBodyFactory;
 import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.infrastructure.messaging.KafkaAppointmentEventPublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,7 @@ class KafkaAppointmentEventPublisherTest {
             UUID.randomUUID(),
             "John Doe",
             "john@example.com",
+            AppointmentNotificationBodyFactory.created(OffsetDateTime.of(2026, 9, 7, 18, 51, 22, 785_000_000, ZoneOffset.ofHours(-3))),
             OffsetDateTime.of(2026, 9, 7, 18, 51, 22, 785_000_000, ZoneOffset.ofHours(-3))
         );
 
@@ -53,6 +55,7 @@ class KafkaAppointmentEventPublisherTest {
 
         final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         final String json = objectMapper.writeValueAsString(event);
+        assertTrue(json.contains("\"body\":\"Um novo agendamento foi feito para 07/09/2026 às 18:51.\""));
         assertTrue(json.contains("\"appointmentDateTime\":\"2026-09-07 18:51:22.785 -0300\""));
     }
 

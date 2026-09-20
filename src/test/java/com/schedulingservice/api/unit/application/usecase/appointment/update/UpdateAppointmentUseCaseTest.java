@@ -2,6 +2,8 @@ package com.schedulingservice.api.unit.application.usecase.appointment.update;
 
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.dto.event.AppointmentNotificationBodyFactory;
+import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.usecase.appointment.update.UpdateAppointmentUseCase;
@@ -80,8 +82,11 @@ class UpdateAppointmentUseCaseTest {
 
         assertEquals(updated.getUuid(), useCase.execute(uuid, updated).getUuid());
 
+        final ArgumentCaptor<AppointmentScheduledNotificationEvent> notificationCaptor = ArgumentCaptor.forClass(AppointmentScheduledNotificationEvent.class);
         final ArgumentCaptor<AppointmentHistoryEvent> eventCaptor = ArgumentCaptor.forClass(AppointmentHistoryEvent.class);
+        verify(eventPublisher).publishNotificationEvent(org.mockito.ArgumentMatchers.eq(updated.getUuid()), notificationCaptor.capture());
         verify(eventPublisher).publishHistoryEvent(org.mockito.ArgumentMatchers.eq(updated.getUuid()), eventCaptor.capture());
+        assertEquals(AppointmentNotificationBodyFactory.updated(updated.getAppointmentDateTime()), notificationCaptor.getValue().body());
         assertEquals(AppointmentHistoryEventType.UPDATED, eventCaptor.getValue().type());
     }
 

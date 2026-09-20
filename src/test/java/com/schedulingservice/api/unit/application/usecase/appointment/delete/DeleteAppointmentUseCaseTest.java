@@ -2,6 +2,8 @@ package com.schedulingservice.api.unit.application.usecase.appointment.delete;
 
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.dto.event.AppointmentNotificationBodyFactory;
+import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.application.usecase.appointment.delete.DeleteAppointmentUseCase;
@@ -64,8 +66,11 @@ class DeleteAppointmentUseCaseTest {
         when(appointmentGateway.save(any(Appointment.class))).thenReturn(current);
 
         assertDoesNotThrow(() -> useCase.execute(uuid));
+        final ArgumentCaptor<AppointmentScheduledNotificationEvent> notificationCaptor = ArgumentCaptor.forClass(AppointmentScheduledNotificationEvent.class);
         final ArgumentCaptor<AppointmentHistoryEvent> eventCaptor = ArgumentCaptor.forClass(AppointmentHistoryEvent.class);
+        verify(eventPublisher).publishNotificationEvent(org.mockito.ArgumentMatchers.eq(current.getUuid()), notificationCaptor.capture());
         verify(eventPublisher).publishHistoryEvent(org.mockito.ArgumentMatchers.eq(current.getUuid()), eventCaptor.capture());
+        assertEquals(AppointmentNotificationBodyFactory.deleted(), notificationCaptor.getValue().body());
         assertEquals(AppointmentHistoryEventType.DELETED, eventCaptor.getValue().type());
     }
 

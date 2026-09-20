@@ -2,6 +2,8 @@ package com.schedulingservice.api.application.usecase.appointment.update;
 
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEvent;
 import com.schedulingservice.api.application.dto.event.AppointmentHistoryEventType;
+import com.schedulingservice.api.application.dto.event.AppointmentNotificationBodyFactory;
+import com.schedulingservice.api.application.dto.event.AppointmentScheduledNotificationEvent;
 import com.schedulingservice.api.application.gateway.AppointmentEventPublisher;
 import com.schedulingservice.api.application.gateway.AppointmentGateway;
 import com.schedulingservice.api.domain.exception.ConflictException;
@@ -59,6 +61,17 @@ public class UpdateAppointmentUseCase {
         );
 
         final Appointment savedAppointment = appointmentGateway.save(updatedAppointment);
+        eventPublisher.publishNotificationEvent(
+            savedAppointment.getUuid(),
+            new AppointmentScheduledNotificationEvent(
+                savedAppointment.getPatientId(),
+                savedAppointment.getDoctorId(),
+                savedAppointment.getFullname(),
+                savedAppointment.getEmail(),
+                AppointmentNotificationBodyFactory.updated(savedAppointment.getAppointmentDateTime()),
+                savedAppointment.getAppointmentDateTime()
+            )
+        );
         eventPublisher.publishHistoryEvent(
             savedAppointment.getUuid(),
             new AppointmentHistoryEvent(

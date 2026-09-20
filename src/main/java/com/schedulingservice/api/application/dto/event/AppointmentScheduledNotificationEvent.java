@@ -10,6 +10,7 @@ public record AppointmentScheduledNotificationEvent(
     UUID doctorId,
     String fullname,
     String email,
+    String body,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS Z")
     OffsetDateTime appointmentDateTime
 ) {
