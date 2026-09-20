@@ -22,6 +22,10 @@ Microsserviço de domínio central responsável pela gestão, criação e modifi
 - OpenAPI Generator
 - Docker e Docker Compose
 
+## Arquitetura - Solução
+
+![product-architecture.jpg](docs/product-architecture.jpg)
+
 ## Arquitetura - Clean Architecture
 
 ![clean_arch.png](docs/clean-arch.png)
