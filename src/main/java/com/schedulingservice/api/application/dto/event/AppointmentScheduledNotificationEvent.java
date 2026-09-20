@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record AppointmentScheduledNotificationEvent(
+    UUID appointmentId,
     UUID patientId,
     UUID doctorId,
     String fullname,

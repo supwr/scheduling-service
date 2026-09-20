@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record AppointmentHistoryEvent(
     AppointmentHistoryEventType type,
+    UUID appointmentId,
     UUID patientId,
     UUID doctorId,
     String fullname,

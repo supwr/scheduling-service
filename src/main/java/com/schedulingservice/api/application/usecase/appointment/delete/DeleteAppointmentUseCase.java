@@ -51,6 +51,7 @@ public class DeleteAppointmentUseCase {
         eventPublisher.publishNotificationEvent(
             savedAppointment.getUuid(),
             new AppointmentScheduledNotificationEvent(
+                savedAppointment.getUuid(),
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
                 savedAppointment.getFullname(),
@@ -63,6 +64,7 @@ public class DeleteAppointmentUseCase {
             savedAppointment.getUuid(),
             new AppointmentHistoryEvent(
                 AppointmentHistoryEventType.DELETED,
+                savedAppointment.getUuid(),
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
                 savedAppointment.getFullname(),

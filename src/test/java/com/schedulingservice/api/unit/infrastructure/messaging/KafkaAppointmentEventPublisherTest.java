@@ -34,7 +34,9 @@ class KafkaAppointmentEventPublisherTest {
 
         final UUID resourceUuid = UUID.randomUUID();
         final UUID patientId = UUID.randomUUID();
+        final UUID appointmentId = UUID.randomUUID();
         final AppointmentScheduledNotificationEvent event = new AppointmentScheduledNotificationEvent(
+            appointmentId,
             patientId,
             UUID.randomUUID(),
             "John Doe",
@@ -73,6 +75,7 @@ class KafkaAppointmentEventPublisherTest {
         final UUID patientId = UUID.randomUUID();
         final AppointmentHistoryEvent event = new AppointmentHistoryEvent(
             AppointmentHistoryEventType.SCHEDULED,
+            UUID.randomUUID(),
             patientId,
             UUID.randomUUID(),
             "John Doe",

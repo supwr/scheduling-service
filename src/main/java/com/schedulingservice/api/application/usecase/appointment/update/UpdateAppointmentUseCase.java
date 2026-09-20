@@ -64,6 +64,7 @@ public class UpdateAppointmentUseCase {
         eventPublisher.publishNotificationEvent(
             savedAppointment.getUuid(),
             new AppointmentScheduledNotificationEvent(
+                savedAppointment.getUuid(),
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
                 savedAppointment.getFullname(),
@@ -76,6 +77,7 @@ public class UpdateAppointmentUseCase {
             savedAppointment.getUuid(),
             new AppointmentHistoryEvent(
                 AppointmentHistoryEventType.UPDATED,
+                savedAppointment.getUuid(),
                 savedAppointment.getPatientId(),
                 savedAppointment.getDoctorId(),
                 savedAppointment.getFullname(),
