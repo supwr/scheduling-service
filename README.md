@@ -34,6 +34,13 @@ Microsserviço de domínio central responsável pela gestão, criação e modifi
 
 ![database.png](docs/database.png)
 
+## Kafka
+
+| Topico | Consumer/Producer | Consumer group |
+| --- | --- |----------------|
+| `scheduling.appointment.notification` | Producer | -              |
+| `scheduling.appointment.scheduled` | Producer | -              |
+
 ## Cobertura de testes
 
 ![test-coverage.png](docs/test-coverage.png)
