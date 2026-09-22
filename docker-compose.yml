@@ -16,20 +16,20 @@ services:
     networks:
       - scheduling-service-network
 
-#  scheduling-service-api:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    container_name: scheduling-service
-#    env_file:
-#      - .env
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    networks:
-#      - scheduling-service-network
+  scheduling-service-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scheduling-service
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - scheduling-service-network
   
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
